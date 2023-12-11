@@ -20,14 +20,16 @@ def get_birthdays_per_week(users):
 
     # Determine day numbers for the week from today
     day_today = int(date.today().strftime("%j"))  # current day number
-    day_in_week = int(
-        (date.today() + timedelta(days=7)).strftime("%j")
-    )  # day number in a week from current
+    # day_today = int(datetime(year=2023, month=12, day=26,).strftime("%j") # Test)
+    weekday_today = date.today().strftime("%A")
+    day_in_week = day_today + 7
 
-    if date.today().strftime("%A") == "Sunday":
+    # weekday_today = "Tuesday"  # Test
+
+    if weekday_today == "Sunday":
         day_today -= 1  #   if current day is Sunday then include BD from previous Sat, which will be celebrated on Mon
         day_in_week -= 1
-    if date.today().strftime("%A") == "Monday":
+    if weekday_today == "Monday":
         day_today -= 2  #   if current day is Monday then exclude BD from the next Sat and Sun, as next Mon is out of the list, but include from previous Sut and Sun
         day_in_week -= 2
 
@@ -54,7 +56,6 @@ def get_birthdays_per_week(users):
         this_bd_dt = datetime.strptime(
             this_bd_str, "%b %d %Y"
         ).date()  # DateTime format user's BD this year
-       
 
         users_bd_num = int(
             this_bd_dt.strftime("%j")
@@ -73,7 +74,7 @@ def get_birthdays_per_week(users):
         i += 1
 
     # Delete empty days
-    
+
     i = 0
     for day in week_days:
         if not birthdays_per_week[day]:
@@ -92,9 +93,9 @@ def get_birthdays_per_week(users):
 
 if __name__ == "__main__":
     users = [
-        {"name": "Jan", "birthday": datetime(1976, 12, 13).date()},
-        {"name": "Jim Koum", "birthday": datetime(1976, 12, 10).date()},
-        {"name": "Jack Stoun", "birthday": datetime(1976, 12, 15).date()},
+        {"name": "John", "birthday": datetime(2023, 12, 27).date()},
+        {"name": "Doe", "birthday": datetime(2023, 12, 29).date()},
+        {"name": "Alice", "birthday": datetime(2023, 12, 23).date()},
         {"name": "Bill Fraud", "birthday": datetime(1976, 12, 14).date()},
     ]
 
