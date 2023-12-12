@@ -50,8 +50,8 @@ def get_birthdays_per_week(users):
     # Sort users by week days
     i = 0
     while i < len(users):
-        this_bd_str = users[i]["birthday"].strftime("%b %d ") + datetime.now().strftime(
-            "%Y"
+        this_bd_str = users[i]["birthday"].strftime("%b %d ") + date.today().strftime(
+            "%Y" 
         )  # str user's BD this year
         this_bd_dt = datetime.strptime(
             this_bd_str, "%b %d %Y"
@@ -64,8 +64,8 @@ def get_birthdays_per_week(users):
         if (users_bd_num >= day_today) and (users_bd_num < day_in_week):
             weekday = this_bd_dt.strftime("%A")  # week day of users BD
             weekday = week_days[weekday]  # week day to celebrate
-            if not (weekday in birthdays_per_week.keys()):
-                birthdays_per_week[weekday] = []
+            # if not (weekday in birthdays_per_week.keys()):
+            #     birthdays_per_week[weekday] = []
             birthdays_per_week[weekday].append(users[i]["name"].split()[0])
         elif users_bd_num < day_today:  # list of users with BD in the past
             birthdays_earlier[users[i]["name"].split()[0]] = this_bd_dt.strftime(
@@ -93,9 +93,9 @@ def get_birthdays_per_week(users):
 
 if __name__ == "__main__":
     users = [
-        {"name": "John", "birthday": datetime(2023, 12, 27).date()},
-        {"name": "Doe", "birthday": datetime(2023, 12, 29).date()},
-        {"name": "Alice", "birthday": datetime(2023, 12, 23).date()},
+        {"name": "John", "birthday": datetime(2023, 12, 17).date()},
+        {"name": "Doe", "birthday": datetime(2023, 12, 16).date()},
+        {"name": "Alice", "birthday": datetime(2023, 12, 11).date()},
         {"name": "Bill Fraud", "birthday": datetime(1976, 12, 14).date()},
     ]
 
