@@ -18,72 +18,49 @@ def get_birthdays_per_week(users):
         print("Users list is empty")
         return {}
 
-    # Determine day numbers for the week from today
-    # day_today = int(date.today().strftime("%j"))  # current day number
+    # Determine key days
     day_today = date.today()
     year_days = 365 if int(date.today().strftime("%Y")) % 4 else 366
-    # day_today = int(datetime(year=2023, month=12, day=26,).strftime("%j")) # Test
     weekday_today = date.today().strftime("%A")
     day_in_week = day_today + timedelta(days=7)
-
-    # weekday_today = "Tuesday"  # Test
-
+    # if run on Sunday then include BD from previous Sat
     if weekday_today == "Sunday":
-        day_today -= timedelta(
-            days=1
-        )  #   if current day is Sunday then include BD from previous Sat, which will be celebrated on Mon
+        day_today -= timedelta(days=1)
         day_in_week -= timedelta(days=1)
+    # if run on Monday then include BD from previous Sat and Sun
     if weekday_today == "Monday":
-        day_today -= timedelta(
-            days=2
-        )  #   if current day is Monday then exclude BD from the next Sat and Sun, which are out of the list, but include previous Sut, Sun
+        day_today -= timedelta(days=2)
         day_in_week -= timedelta(days=2)
 
-    # Prepare a blank sheet for the next week starting from the current day of the week
+    # Prepare a blank sheet for the week from today
     for i in range(0, 7):
         day = (date.today() + timedelta(days=i)).strftime("%A")
         if not (day == "Saturday" or day == "Sunday"):
             birthdays_per_week[day] = []
 
-    # Prepare a blank sheet for the next week starting from Monday (it's not convenient but likely is required)
-    # i = 0
-    # for day in week_days:
-    #     birthdays_per_week[day] = []
-    #     i += 1
-    #     if i == 5:
-    #         break
-
     # Sort users BD by week days
     i = 0
     while i < len(users):
+        # transfrom date of birth to birthday this year
         this_bd_str = users[i]["birthday"].strftime("%b %d ") + date.today().strftime(
             "%Y"
-        )  # str user's BD this year
-        this_bd_dt = datetime.strptime(
-            this_bd_str, "%b %d %Y"
-        ).date()  # DateTime format user's BD
-
+        )
+        this_bd_dt = datetime.strptime(this_bd_str, "%b %d %Y").date()
+        # consider new year week
         if day_today - this_bd_dt > timedelta(year_days - 7):
             this_bd_dt += timedelta(year_days)
-
-        # users_bd_num = int(
-        #     this_bd_dt.strftime("%j")
-        # )  # user's BD day number in current year
-
+        # filter BDs
         if (this_bd_dt >= day_today) and (this_bd_dt < day_in_week):
             weekday = this_bd_dt.strftime("%A")  # week day of users BD
             weekday = week_days[weekday]  # week day to celebrate
-            # if not (weekday in birthdays_per_week.keys()):
-            #     birthdays_per_week[weekday] = []
             birthdays_per_week[weekday].append(users[i]["name"].split()[0])
-        elif this_bd_dt < day_today:  # list of users which BD passed this year
+        elif this_bd_dt < day_today:  # list BD passed this year
             birthdays_earlier[users[i]["name"].split()[0]] = this_bd_dt.strftime(
                 "%B %d"
             )
         i += 1
 
-    # Delete empty days
-
+    # Delete empty items
     i = 0
     for day in week_days:
         if not birthdays_per_week[day]:
@@ -91,7 +68,8 @@ def get_birthdays_per_week(users):
         i += 1
         if i == 5:
             break
-    # Print past BD
+
+    # Print list of BD passed earlier
     if birthdays_earlier:
         print("Birthdays have already passed this year:")
         for name, day in birthdays_earlier.items():
