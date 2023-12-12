@@ -19,55 +19,64 @@ def get_birthdays_per_week(users):
         return {}
 
     # Determine day numbers for the week from today
-    day_today = int(date.today().strftime("%j"))  # current day number
-    # day_today = int(datetime(year=2023, month=12, day=26,).strftime("%j") # Test)
+    # day_today = int(date.today().strftime("%j"))  # current day number
+    day_today = date.today()
+    year_days = 365 if int(date.today().strftime("%Y")) % 4 else 366
+    # day_today = int(datetime(year=2023, month=12, day=26,).strftime("%j")) # Test
     weekday_today = date.today().strftime("%A")
-    day_in_week = day_today + 7
+    day_in_week = day_today + timedelta(days=7)
 
     # weekday_today = "Tuesday"  # Test
 
     if weekday_today == "Sunday":
-        day_today -= 1  #   if current day is Sunday then include BD from previous Sat, which will be celebrated on Mon
-        day_in_week -= 1
+        day_today -= timedelta(
+            days=1
+        )  #   if current day is Sunday then include BD from previous Sat, which will be celebrated on Mon
+        day_in_week -= timedelta(days=1)
     if weekday_today == "Monday":
-        day_today -= 2  #   if current day is Monday then exclude BD from the next Sat and Sun, as next Mon is out of the list, but include from previous Sut and Sun
-        day_in_week -= 2
+        day_today -= timedelta(
+            days=2
+        )  #   if current day is Monday then exclude BD from the next Sat and Sun, which are out of the list, but include previous Sut, Sun
+        day_in_week -= timedelta(days=2)
 
     # Prepare a blank sheet for the next week starting from the current day of the week
-    # for i in range(0, 7):
-    #     day = (date.today() + timedelta(days=i)).strftime("%A")
-    #     if not (day == "Saturday" or day == "Sunday"):
-    #         birthdays_per_week[day] = []
+    for i in range(0, 7):
+        day = (date.today() + timedelta(days=i)).strftime("%A")
+        if not (day == "Saturday" or day == "Sunday"):
+            birthdays_per_week[day] = []
 
     # Prepare a blank sheet for the next week starting from Monday (it's not convenient but likely is required)
-    i = 0
-    for day in week_days:
-        birthdays_per_week[day] = []
-        i += 1
-        if i == 5:
-            break
+    # i = 0
+    # for day in week_days:
+    #     birthdays_per_week[day] = []
+    #     i += 1
+    #     if i == 5:
+    #         break
 
-    # Sort users by week days
+    # Sort users BD by week days
     i = 0
     while i < len(users):
         this_bd_str = users[i]["birthday"].strftime("%b %d ") + date.today().strftime(
-            "%Y" 
+            "%Y"
         )  # str user's BD this year
         this_bd_dt = datetime.strptime(
             this_bd_str, "%b %d %Y"
-        ).date()  # DateTime format user's BD this year
+        ).date()  # DateTime format user's BD
 
-        users_bd_num = int(
-            this_bd_dt.strftime("%j")
-        )  # user's BD day number in current year
+        if day_today - this_bd_dt > timedelta(year_days - 7):
+            this_bd_dt += timedelta(year_days)
 
-        if (users_bd_num >= day_today) and (users_bd_num < day_in_week):
+        # users_bd_num = int(
+        #     this_bd_dt.strftime("%j")
+        # )  # user's BD day number in current year
+
+        if (this_bd_dt >= day_today) and (this_bd_dt < day_in_week):
             weekday = this_bd_dt.strftime("%A")  # week day of users BD
             weekday = week_days[weekday]  # week day to celebrate
             # if not (weekday in birthdays_per_week.keys()):
             #     birthdays_per_week[weekday] = []
             birthdays_per_week[weekday].append(users[i]["name"].split()[0])
-        elif users_bd_num < day_today:  # list of users with BD in the past
+        elif this_bd_dt < day_today:  # list of users which BD passed this year
             birthdays_earlier[users[i]["name"].split()[0]] = this_bd_dt.strftime(
                 "%B %d"
             )
@@ -93,9 +102,9 @@ def get_birthdays_per_week(users):
 
 if __name__ == "__main__":
     users = [
-        {"name": "John", "birthday": datetime(2023, 12, 17).date()},
-        {"name": "Doe", "birthday": datetime(2023, 12, 16).date()},
-        {"name": "Alice", "birthday": datetime(2023, 12, 11).date()},
+        {"name": "John", "birthday": datetime(1975, 12, 21).date()},
+        {"name": "Doe", "birthday": datetime(1975, 12, 20).date()},
+        {"name": "Alice", "birthday": datetime(1975, 1, 1).date()},
         {"name": "Bill Fraud", "birthday": datetime(1976, 12, 14).date()},
     ]
 
