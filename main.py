@@ -1,3 +1,7 @@
+"""
+A module that creates calendar for the next week birthdays
+"""
+
 from datetime import date, datetime, timedelta
 
 week_days = {
@@ -14,6 +18,12 @@ birthdays_earlier = {}
 
 
 def get_birthdays_per_week(users):
+    # Function receives list of users with dates of birth.
+    # Parameters:
+    # users -  list of users with dates of birth.
+    # Returns:
+    # birthdays_per_week - the dictionary-calendar of BD on week ahead
+
     if len(users) == 0:
         print("Users list is empty")
         return {}
@@ -35,16 +45,15 @@ def get_birthdays_per_week(users):
     # Prepare a blank sheet for the week from today
     for i in range(0, 7):
         day = (date.today() + timedelta(days=i)).strftime("%A")
-        if not (day == "Saturday" or day == "Sunday"):
+        if day not in ["Saturday", "Sunday"]:
             birthdays_per_week[day] = []
 
     # Sort users BD by week days
     i = 0
     while i < len(users):
         # transfrom date of birth to birthday this year
-        this_bd_str = users[i]["birthday"].strftime("%b %d ") + date.today().strftime(
-            "%Y"
-        )
+        this_bd_str = users[i]["birthday"].strftime("%b %d ") + \
+            date.today().strftime("%Y")
         this_bd_dt = datetime.strptime(this_bd_str, "%b %d %Y").date()
         # consider new year week
         if day_today - this_bd_dt > timedelta(year_days - 7):
@@ -55,9 +64,8 @@ def get_birthdays_per_week(users):
             weekday = week_days[weekday]  # week day to celebrate
             birthdays_per_week[weekday].append(users[i]["name"].split()[0])
         elif this_bd_dt < day_today:  # list BD passed this year
-            birthdays_earlier[users[i]["name"].split()[0]] = this_bd_dt.strftime(
-                "%B %d"
-            )
+            birthdays_earlier[users[i]["name"].split()[0]] = \
+                this_bd_dt.strftime("%B %d")
         i += 1
 
     # Delete empty items
@@ -79,14 +87,14 @@ def get_birthdays_per_week(users):
 
 
 if __name__ == "__main__":
-    users = [
+    users_dict = [
         {"name": "John", "birthday": datetime(1975, 12, 21).date()},
         {"name": "Doe", "birthday": datetime(1975, 12, 20).date()},
         {"name": "Alice", "birthday": datetime(1975, 1, 1).date()},
         {"name": "Bill Fraud", "birthday": datetime(1976, 12, 14).date()},
     ]
 
-    result = get_birthdays_per_week(users)
+    result = get_birthdays_per_week(users_dict)
     print(result)
 
     # Виводимо результат
